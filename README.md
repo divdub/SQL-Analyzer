@@ -43,6 +43,10 @@ MAX_UPLOAD_MB=200
 
 `vercel.json` is included with API `maxDuration` set to 60 seconds.
 
+Upload handling uses the OS temp directory at runtime, so the app does not rely on a writable repo folder in Vercel.
+
+Note: very large multipart uploads can still be constrained by Vercel function request-size limits, so test with a representative SQL dump before relying on production-sized files.
+
 ## Important note for large-file sessions
 
 The SQL explorer session cache is in-memory. On serverless infrastructure this can reset across cold starts. For production-grade persistence across requests, move session data to Redis/KV/DB.

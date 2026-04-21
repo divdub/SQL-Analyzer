@@ -2,11 +2,12 @@ import fs from "fs";
 import path from "path";
 import multer from "multer";
 import { analyzeSqlFileFromPath } from "../../../server/sqlAnalyzer";
+import { getUploadDir } from "../../../server/uploadPaths";
 
 const MAX_UPLOAD_MB = Number(process.env.MAX_UPLOAD_MB || 200);
 const MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024;
 
-const uploadDir = path.resolve(process.cwd(), "uploads", "sql-analyzer");
+const uploadDir = getUploadDir("sql-analyzer");
 fs.mkdirSync(uploadDir, { recursive: true });
 
 const storage = multer.diskStorage({
@@ -79,11 +80,9 @@ export default async function handler(req, res) {
       error instanceof multer.MulterError &&
       error.code === "LIMIT_FILE_SIZE"
     ) {
-      return res
-        .status(413)
-        .json({
-          error: `File is too large. Max allowed size is ${MAX_UPLOAD_MB}MB.`,
-        });
+      return res.status(413).json({
+        error: `File is too large. Max allowed size is ${MAX_UPLOAD_MB}MB.`,
+      });
     }
     return res.status(400).json({ error: error.message });
   }
